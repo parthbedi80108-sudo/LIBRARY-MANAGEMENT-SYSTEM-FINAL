@@ -5,12 +5,9 @@
 #include <vector>
 #include <string>
 
-// DSA Concept: Linked List Node for History Tracking
 struct HistoryNode {
     string logMessage;
     HistoryNode* next;
-    
-    // Node Constructor
     HistoryNode(string msg) {
         logMessage = msg;
         next = nullptr;
@@ -20,21 +17,16 @@ struct HistoryNode {
 class Library {
 private:
     vector<Book> books;
-    HistoryNode* historyHead; // Linked List ka Head pointer
-
-    // DSA Concept: Sorting Algorithm
+    HistoryNode* historyHead;
     void sortBooksById(); 
 
-    // DSA Concept: Searching Algorithms
     void linearSearch(int id) const;
     void binarySearch(int id) const;
-
-    // History list mein node add karne ke liye
     void addHistory(string message); 
 
 public:
-    Library();  // Constructor
-    ~Library(); // Destructor (Memory free karne ke liye)
+    Library();
+    ~Library(); 
 
     void addBook();
     void viewAllBooks() const;

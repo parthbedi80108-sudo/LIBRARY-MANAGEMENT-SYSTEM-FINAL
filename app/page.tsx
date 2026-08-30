@@ -121,7 +121,13 @@ export default function SELibrarySystem() {
     }
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-[#09090b] text-zinc-500 font-mono flex items-center justify-center text-xs">
+        Loading Secure Database Engine...
+      </div>
+    );
+  }
 
   const commitToDatabase = (updatedBooks: BookRecord[]) => {
     setBooks(updatedBooks);
@@ -196,7 +202,6 @@ export default function SELibrarySystem() {
     }
   };
 
-  // Secure Server-Proxied ChatGPT Assistant Handler
   const handleAiChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!chatInput.trim() || isAiLoading) return;
@@ -208,7 +213,6 @@ export default function SELibrarySystem() {
     setIsAiLoading(true);
 
     try {
-      // Secure backend API route request (prevents client-side API key exposure)
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -227,7 +231,6 @@ export default function SELibrarySystem() {
       console.warn('API route not active, falling back to intelligent generative inference engine.');
     }
 
-    // Professional Generative Fallback (Ensures seamless ChatGPT-like responses without breaking)
     setTimeout(() => {
       let aiReply = "";
       const lower = userQuery.toLowerCase();
