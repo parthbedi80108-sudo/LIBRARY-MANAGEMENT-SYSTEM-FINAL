@@ -1,0 +1,59 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          String        @id @default(uuid())
+  rollNo      String        @unique
+  name        String
+  pinHash     String
+  role        Role          @default(STUDENT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  transactions Transaction[]
+  logs        AuditLog[]
+}
+
+model Book {
+  id          Int           @id @default(autoincrement())
+  title       String
+  author      String
+  category    String
+  isIssued    Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          String        @id @default(uuid())
+  bookId      Int
+  userId      String
+  issuedDate  DateTime      @default(now())
+  returnDate  DateTime
+  returned    Boolean       @default(false)
+  fineAmount  Float         @default(0.0)
+  book        Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+}
+
+model AuditLog {
+  id          String        @id @default(uuid())
+  userId      String?
+  action      String
+  details     String
+  timestamp   DateTime      @default(now())
+  user        User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+enum Role {
+  STUDENT
+  FACULTY
+  ADMIN
+}

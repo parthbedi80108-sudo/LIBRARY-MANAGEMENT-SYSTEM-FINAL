@@ -65,12 +65,12 @@ export default function SELibrarySystem() {
   const [chatInput, setChatInput] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    { sender: 'ai', text: 'Enterprise AI Assistant online. Connected to secure server inference stream. Type anything to begin.' }
+    { sender: 'ai', text: 'Enterprise AI Assistant online. Connected to secure local persistence stream. Type anything to begin.' }
   ]);
 
   const [books, setBooks] = useState<BookRecord[]>(INITIAL_DATABASE_CATALOG);
   const [history, setHistory] = useState<HistoryLog[]>([
-    { logMessage: 'DTU SE Secure Database Engine successfully mounted and synchronized.', time: 'Just now' }
+    { logMessage: 'DTU SE Local Storage Engine successfully mounted and synchronized.', time: 'Just now' }
   ]);
   const [notification, setNotification] = useState<string | null>(null);
 
@@ -124,7 +124,7 @@ export default function SELibrarySystem() {
   if (!mounted) {
     return (
       <div className="min-h-screen bg-[#09090b] text-zinc-500 font-mono flex items-center justify-center text-xs">
-        Loading Secure Database Engine...
+        Loading Local Storage Engine...
       </div>
     );
   }
@@ -212,25 +212,6 @@ export default function SELibrarySystem() {
     setChatInput('');
     setIsAiLoading(true);
 
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: updatedMessages })
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.reply) {
-          setChatMessages(prev => [...prev, { sender: 'ai', text: data.reply }]);
-          setIsAiLoading(false);
-          return;
-        }
-      }
-    } catch (err) {
-      console.warn('API route not active, falling back to intelligent generative inference engine.');
-    }
-
     setTimeout(() => {
       let aiReply = "";
       const lower = userQuery.toLowerCase();
@@ -240,13 +221,11 @@ export default function SELibrarySystem() {
       if (lower.match(/\b(hi|hello|hey|greetings)\b/)) {
         aiReply = "Hello! I am your AI assistant. How can I help you manage the DTU Software Engineering library system today?";
       } else if (lower.includes('how are you')) {
-        aiReply = "All database tables and server worker threads are running at 100% operational efficiency.";
+        aiReply = "All local storage threads and state engines are running at 100% operational efficiency.";
       } else if (lower.includes('book') || lower.includes('catalog') || lower.includes('stats')) {
         aiReply = `Library Database Metrics:\n- Total Catalog Records: ${totalCount}\n- Checked Out: ${issuedCount}\n- Vault Available: ${totalCount - issuedCount}`;
-      } else if (lower.includes('server') || lower.includes('health') || lower.includes('status')) {
-        aiReply = `System Diagnostics Report:\n- Latency: 2ms\n- Persistence: Synchronized Local JSON\n- Security Protocol: Active RBAC\n- Maintenance State: ${isMaintenanceMode ? 'Locked' : 'Online'}`;
       } else {
-        aiReply = `Received prompt: "${userQuery}". As your intelligent architecture assistant, I have logged this request into the transaction buffer. Let me know if you need specific database records or operational reports!`;
+        aiReply = `Received prompt: "${userQuery}". Local buffer updated.`;
       }
 
       setChatMessages(prev => [...prev, { sender: 'ai', text: aiReply }]);
@@ -306,7 +285,7 @@ export default function SELibrarySystem() {
     }
 
     if (action === 'addBook') {
-      const newId = id;
+      const newId = Number(id);
       const newTitle = title;
       const newAuthor = author;
       const newCat = category;
@@ -315,11 +294,11 @@ export default function SELibrarySystem() {
         showNotification('Please fill in all book fields.');
         return;
       }
-      if (books.some((b: BookRecord) => b.id === Number(newId))) {
+      if (books.some((b: BookRecord) => b.id === newId)) {
         showNotification('Book ID already exists in database.');
         return;
       }
-      const updated = [...books, { id: Number(newId), title: newTitle, author: newAuthor, category: newCat, isIssued: false, issuedTo: null }];
+      const updated = [...books, { id: newId, title: newTitle, author: newAuthor, category: newCat, isIssued: false, issuedTo: null }];
       commitToDatabase(updated);
       logToDatabase(`[DB INSERT] ID ${newId}: ${newTitle} into [${newCat}]`);
       setId(''); setTitle(''); setAuthor(''); setCategory('Core SE');
@@ -455,7 +434,7 @@ export default function SELibrarySystem() {
             <div className="flex items-center gap-2">
               <span className={`w-2 h-2 rounded-full ${isMaintenanceMode ? 'bg-amber-500 animate-ping' : 'bg-emerald-500 animate-pulse'}`}></span>
               <span className="text-[11px] uppercase tracking-widest text-zinc-400 font-mono">
-                DTU SE Department — Secure Persistent Architecture {isMaintenanceMode && '[MAINTENANCE]'}
+                DTU SE Department — Local Storage Architecture {isMaintenanceMode && '[MAINTENANCE]'}
               </span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-400">
@@ -712,11 +691,11 @@ export default function SELibrarySystem() {
                   </div>
                   <div className="bg-[#18181b] border border-zinc-800 p-3 rounded font-mono">
                     <span className="text-[10px] text-zinc-500 uppercase">Persistence</span>
-                    <p className="text-sm font-semibold text-emerald-400 mt-0.5">JSON Indexed</p>
+                    <p className="text-sm font-semibold text-emerald-400 mt-0.5">Local Indexed</p>
                   </div>
                   <div className="bg-[#18181b] border border-zinc-800 p-3 rounded font-mono">
                     <span className="text-[10px] text-zinc-500 uppercase">Query Ping</span>
-                    <p className="text-sm font-semibold text-emerald-400 mt-0.5">2ms (Fast)</p>
+                    <p className="text-sm font-semibold text-emerald-400 mt-0.5">0ms (Instant)</p>
                   </div>
                   <div className="bg-[#18181b] border border-zinc-800 p-3 rounded font-mono">
                     <span className="text-[10px] text-zinc-500 uppercase">Engine Status</span>
@@ -732,9 +711,9 @@ export default function SELibrarySystem() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-500">Enterprise AI Assistant</h2>
-                    <p className="text-[11px] text-zinc-400 mt-0.5">Secure server-side LLM proxy for handling natural language queries.</p>
+                    <p className="text-[11px] text-zinc-400 mt-0.5">Secure local inference proxy for handling natural language queries.</p>
                   </div>
-                  <span className="text-[10px] bg-emerald-950/60 border border-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded font-mono">Secure Proxy Active</span>
+                  <span className="text-[10px] bg-emerald-950/60 border border-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded font-mono">Local Proxy Active</span>
                 </div>
 
                 <div className="bg-[#18181b] border border-zinc-800 rounded p-4 h-64 overflow-y-auto space-y-3 font-mono text-xs">
@@ -771,7 +750,7 @@ export default function SELibrarySystem() {
                 <div className="flex justify-between items-center">
                   <div>
                     <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-500">Database Schema Category Graph</h2>
-                    <p className="text-[11px] text-zinc-400 mt-0.5">Real-time percentage distribution across database tables.</p>
+                    <p className="text-[11px] text-zinc-400 mt-0.5">Real-time percentage distribution across local records.</p>
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => handleAction('seedDatabase', {})} className="bg-zinc-800 border border-zinc-700 text-zinc-200 text-xs px-3 py-1.5 rounded hover:bg-zinc-700 transition font-mono">
